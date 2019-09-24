@@ -46,16 +46,21 @@ class ViewController: UIViewController,UIScrollViewDelegate {
     // 下方小圓點
     lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
-        pageControl.frame = CGRect(x: 0, y: 200+50-20, width: width, height: 20)
+        pageControl.frame = CGRect(x: 0, y: scrollView.frame.maxY-20, width: width, height: 20)
         pageControl.backgroundColor = UIColor.clear
+        //小圓點選取時顏色
         pageControl.currentPageIndicatorTintColor = UIColor.init(displayP3Red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        //小圓點未選取顏色
         pageControl.pageIndicatorTintColor = UIColor.init(displayP3Red: 1.0, green: 1.0, blue: 1.0, alpha: 0.2)
         pageControl.numberOfPages = imageArray.count
         pageControl.currentPage = 0
         return pageControl
     }()
     
-    // 更新圖片
+
+    /**
+     * 更新圖片
+     */
     func reloadImage(){
         var leftIndex = 0
         var rightIndex = 0
@@ -69,45 +74,49 @@ class ViewController: UIViewController,UIScrollViewDelegate {
         leftImageView.image = UIImage(named: imageArray[leftIndex])
         
     }
-    // timer
+    /**
+     * 更新timer
+     */
     func setupTimer() {
-   
         timer = Timer.scheduledTimer(timeInterval: 2,target:self,selector:#selector(timeChanged),userInfo:nil,repeats:true)
         RunLoop.current.add(timer, forMode: RunLoop.Mode.common)
-        
     }
-    
-    
+
+    /**
+     * time 事件
+     */
     @objc func timeChanged(){
         currentIndex = currentIndex + 1
-        //更新加載試圖
+        //更新圖片+scrollView
         reloadImage()
     }
   
-    //開始拖動
+    /**
+     * scrollView 滑動開始監聽
+     */
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         timer.invalidate()
     }
-    //停止拖動
+
+    /**
+     * scrollView 滑動坄停止監聽
+     */
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         //向右拖動
         if scrollView.contentOffset.x > width {
             currentIndex = (currentIndex + 1) % imageArray.count
-            
         }
+        
         //向左拖動
         if scrollView.contentOffset.x < width{
             currentIndex = (currentIndex - 1 + imageArray.count) % imageArray.count
-            
         }
         
         //更新小圓點當前位置
         pageControl.currentPage = (currentIndex - 1 + imageArray.count) % imageArray.count
         reloadImage()
-        
         setupTimer()
-        
     }
 }
 
